@@ -1,9 +1,9 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:us-east-1:730335487196:task-definition/Customer_Succcess_Platorm_Task_Definition:1",
+    "taskDefinitionArn": "arn:aws:ecs:us-east-1:730335487196:task-definition/Customer_Succcess_Platorm_Task_Definition:2",
     "containerDefinitions": [
         {
             "name": "Customer_Success_Container_Angular",
-            "image": "730335487196.dkr.ecr.us-east-1.amazonaws.com/customer_success_platform_repository:angular",
+            "image": "docker.io/sunny2883/customersuccessproject-angular-app:latest",
             "cpu": 0,
             "portMappings": [
                 {
@@ -34,7 +34,7 @@
         },
         {
             "name": "Customer_Success_Container_dotnet",
-            "image": "730335487196.dkr.ecr.us-east-1.amazonaws.com/customer_success_platform_repository:dotnet",
+            "image": "docker.io/sunny2883/customersuccessproject-dotnet-app:latest",
             "cpu": 0,
             "portMappings": [
                 {
@@ -53,11 +53,35 @@
         },
         {
             "name": "Customer_Success_Container_Postgres",
-            "image": "730335487196.dkr.ecr.us-east-1.amazonaws.com/customer_success_platform_repository:postgres",
+            "image": "postgres:latest",
             "cpu": 0,
-            "portMappings": [],
+            "portMappings": [
+                {
+                    "name": "customer_success_container_postgres-5432-tcp",
+                    "containerPort": 5432,
+                    "hostPort": 5432,
+                    "protocol": "tcp"
+                }
+            ],
             "essential": false,
-            "environment": [],
+            "environment": [
+                {
+                    "name": "POSTGRES_USER",
+                    "value": "sunny"
+                },
+                {
+                    "name": "POSTGRES_PASSWORD",
+                    "value": "sunny12"
+                },
+                {
+                    "name": "POSTGRES_DB",
+                    "value": "CustomerSuccessPlatform"
+                },
+                {
+                    "name": "POSTGRES_HOST",
+                    "value": "postgres"
+                }
+            ],
             "environmentFiles": [],
             "mountPoints": [],
             "volumesFrom": [],
@@ -66,7 +90,7 @@
     ],
     "family": "Customer_Succcess_Platorm_Task_Definition",
     "executionRoleArn": "arn:aws:iam::730335487196:role/ecsTaskExecutionRole",
-    "revision": 1,
+    "revision": 2,
     "volumes": [],
     "status": "ACTIVE",
     "requiresAttributes": [
@@ -77,13 +101,7 @@
             "name": "ecs.capability.execution-role-awslogs"
         },
         {
-            "name": "com.amazonaws.ecs.capability.ecr-auth"
-        },
-        {
             "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
-        },
-        {
-            "name": "ecs.capability.execution-role-ecr-pull"
         },
         {
             "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
@@ -105,7 +123,7 @@
         "cpuArchitecture": "X86_64",
         "operatingSystemFamily": "LINUX"
     },
-    "registeredAt": "2024-03-13T06:34:01.157Z",
+    "registeredAt": "2024-03-13T11:20:27.638Z",
     "registeredBy": "arn:aws:iam::730335487196:root",
     "tags": []
 }

@@ -51,19 +51,7 @@ jobs:
             docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
             docker-compose push
 
-  #      - name: Build and push Docker images
-          
- #         uses: docker/build-push-action@v2
- #         with:
-   #         context: .
-  #          file: docker-compose.yaml
-  #          push: true
-  #          tags: |
-   #           ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:Angular
-#            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:dotnet
-   #           ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:postgres
-
-      
+ 
          
         - name: Fill in the new image ID in the Amazon ECS task definition
           id: task-def
