@@ -1,0 +1,60 @@
+<!-- <ul *ngIf="authService.user$ | async as user">
+  <li>{{ user.name }}</li>
+  <li>{{ user.email }}</li>
+</ul>
+
+<button (click)="logout()">Log out</button> -->
+
+<header
+  class="bg-[#3f51b5] py-3 px-6 flex justify-between items-center gap-10 mb-4"
+>
+  <!-- Left side: Project name -->
+  <div class="flex items-center">
+    <span class="text-white text-lg font-semibold">CSP</span>
+  </div>
+
+  <!-- Center: Search box -->
+  <div class="flex-grow flex items-center justify-center">
+    <input
+      class="flex-grow bg-[#6876c2] text-white rounded py-1 px-3 focus:outline-none"
+      type="text"
+      placeholder="Search..."
+    />
+  </div>
+
+  <!-- Right side: User -->
+  <div>
+    <span class="text-white">Admin</span>
+  </div>
+</header>
+<mat-drawer-container class="home-container min-h-[50vh]" autosize>
+  <mat-drawer #drawer mode="side" opened>
+    <!-- Center: Buttons -->
+    <div class="flex gap-4 flex-col m-2">
+      <!-- Button 1: Create Project -->
+      <button
+        mat-raised-button
+        color="primary"
+        class="h-10 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+      >
+        Create Project
+      </button>
+
+      @for (nav of Navigations; track $index) {
+      <button
+        color="primary"
+        routerLinkActive="active"
+        (click)="navigateTo(nav.path)"
+        class="h-10 bg-gray-100 hover:bg-gray-600 py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+      >
+        {{ nav.displayName }}
+      </button>
+      }
+    </div>
+  </mat-drawer>
+
+  <div class="m-2 p-2">
+
+    <router-outlet></router-outlet>
+  </div>
+</mat-drawer-container>
