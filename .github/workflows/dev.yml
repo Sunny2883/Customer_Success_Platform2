@@ -1,1 +1,86 @@
+name: Deploy Customer Success Platform on ECS
+
+on:
+  workflow_dispatch:
+
+env:
+    AWS_REGION: us-east-1                 
+    ECR_REPOSITORY: customer_success_platform_repository           
+    ECS_SERVICE: Service_For_Customer_Success_Platform              
+    ECS_CLUSTER: Customer_Success_Platform_Cluster            
+    ECS_TASK_DEFINITION: Customer_Succcess_Platorm_Task_Definition-revision1.json
+                                                
+    CONTAINER_NAME_1: Customer_Success_Container_Angular  
+    CONTAINER_NAME_2: Customer_Success_Container_dotnet   
+    CONTAINER_NAME_3: Customer_Success_Container_Postgres
+                                          
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+        - name: Checkout
+          uses: actions/checkout@v4
+
+        - name: Configure AWS credentials
+          uses: aws-actions/configure-aws-credentials@v4
+          with:
+            role-skip-session-tagging: true
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-region: ${{ secrets.aws_region }}
+
+        - name: Login to Amazon ECR
+          id: login-ecr
+          uses: aws-actions/amazon-ecr-login@62f4f872db3836360b72999f4b87f1ff13310f3a
+        
+
+        - name: Build and push Docker images
+          uses: docker/build-push-action@v2
+          with:
+            context: .
+            file: docker-compose.yaml
+            push: true
+            tags: |
+              ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:Angular
+              ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:dotnet
+              ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:postgres
+
+
+        - name: Fill in the new image ID in the Amazon ECS task definition
+          id: task-def
+          uses: aws-actions/amazon-ecs-render-task-definition@c804dfbdd57f713b6c079302a4c01db7017a36fc
+          with:
+            definition: ${{ env.ECS_TASK_DEFINITION }}
+            container-name: ${{ env.CONTAINER_NAME_2 }}
+            image: ${{ steps.build-image.outputs.image }}
+
+        - name: Fill in the new image ID in the Amazon ECS task definition for Angular container
+          id: task-def-angular
+          uses: aws-actions/amazon-ecs-render-task-definition@c804dfbdd57f713b6c079302a4c01db7017a36fc
+          with:
+            definition: ${{ env.ECS_TASK_DEFINITION }}
+            container-name: ${{ env.CONTAINER_NAME_1 }}  # Angular container
+            image: ${{ steps.build-image.outputs.image }}
+          
+        - name: Fill in the new image ID in the Amazon ECS task definition for Postgres container
+          id: task-def-postgres
+          uses: aws-actions/amazon-ecs-render-task-definition@c804dfbdd57f713b6c079302a4c01db7017a36fc
+          with:
+            definition: ${{ env.ECS_TASK_DEFINITION }}
+            container-name: ${{ env.CONTAINER_NAME_3 }}  # Postgres container
+            image: ${{ steps.build-image.outputs.image }}
+          
+
+   
+
+        - name: Deploy Amazon ECS task definition
+          uses: aws-actions/amazon-ecs-deploy-task-definition@df9643053eda01f169e64a0e60233aacca83799a
+          with:
+            task-definition: ${{ steps.task-def.outputs.task-definition }}
+            service: ${{ env.ECS_SERVICE }}
+            cluster: ${{ env.ECS_CLUSTER }}
+            wait-for-service-stability: true
 
